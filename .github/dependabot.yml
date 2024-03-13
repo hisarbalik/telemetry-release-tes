@@ -1,0 +1,24 @@
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/dependency"
+
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      otel: # used by e2e and integration tests to push dummy otlp data
+        patterns:
+          - "go.opentelemetry.io/otel/*"
+    commit-message:
+      prefix: "chore(dependabot)"
+    labels:
+      - "area/dependency"

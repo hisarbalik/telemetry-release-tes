@@ -1,0 +1,36 @@
+name: Finalize tests
+description: Finalizes integration test execution with cleanup and collecting dumps fors the error scenario
+
+inputs:
+  failure:
+    description: Are we in failure mode?
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+
+    - name: Describe manager pod
+      shell: bash
+      if: ${{ inputs.failure }}
+      run: |
+        kubectl -n kyma-system describe pod -l "app.kubernetes.io/instance=telemetry, app.kubernetes.io/name=manager"
+
+    - name: Print manager logs
+      shell: bash
+      if: ${{ inputs.failure }}
+      run: |
+        kubectl -n kyma-system logs -l "app.kubernetes.io/instance=telemetry, app.kubernetes.io/name=manager"
+
+    - name: List Namespaces
+      shell: bash
+      if: ${{ inputs.failure }}
+      run: |
+        kubectl get namespaces
+
+    - name: List all resources
+      shell: bash
+      if: ${{ inputs.failure }}
+      run: |
+        kubectl get all --all-namespaces

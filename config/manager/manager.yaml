@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager
+  namespace: system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: manager
+      app.kubernetes.io/instance: telemetry
+      kyma-project.io/component: controller
+      control-plane: telemetry-manager
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        app.kubernetes.io/name: manager
+        app.kubernetes.io/instance: telemetry
+        kyma-project.io/component: controller
+        control-plane: telemetry-manager
+    spec:
+      priorityClassName: "telemetry-priority-class"
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - command:
+        - /manager
+        args:
+        - --cert-dir=/tmp
+        - --fluent-bit-priority-class-name=telemetry-priority-class-high
+        - --metric-gateway-priority-class=telemetry-priority-class
+        - --trace-collector-priority-class=telemetry-priority-class
+        - --validating-webhook-enabled=true
+        image: controller:latest
+        name: manager
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 100m
+            memory: 384Mi
+          requests:
+            cpu: 5m
+            memory: 100Mi
+        env:
+        - name: APP_LOG_LEVEL
+          value: "info"
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      serviceAccountName: manager
+      terminationGracePeriodSeconds: 10
