@@ -37,12 +37,6 @@ get_previous_release_version() {
     fi
 }
 
-get_new_release_version() {
-    # get the list of tags in a reverse chronological order
-    TAG_LIST=($(git tag --sort=-creatordate))
-    export GORELEASER_CURRENT_TAG=${TAG_LIST[0]}
-}
-
 function create_github_release() {
     echo "Creating the Github release"
     git reset --hard
@@ -51,7 +45,6 @@ function create_github_release() {
 
 function main() {
     prepare_release_artefacts
-    get_new_release_version
     get_previous_release_version
     create_github_release
 }
