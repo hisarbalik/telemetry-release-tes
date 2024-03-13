@@ -44,7 +44,6 @@ function create_github_release() {
 
 function main() {
     prepare_release_artefacts
-    get_new_release_version
     get_previous_release_version
     create_github_release
 }
