@@ -19,3 +19,5 @@ release 1.13.0
 release 1.14.0
 
 add some fixes for release 1.14.0
+
+new major release 2.0.0
