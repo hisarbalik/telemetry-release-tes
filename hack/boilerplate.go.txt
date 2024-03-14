@@ -23,3 +23,5 @@ add some fixes for release 1.14.0
 new major release 2.0.0
 
 fix bug and release as patch 2.0.1
+
+new feature and release as minor 2.1.0
